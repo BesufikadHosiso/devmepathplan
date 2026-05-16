@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevPath — Senior Build Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --bg2: #0f1117;
+    --bg3: #141720;
+    --bg4: #1a1f2e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8eaf0;
+    --text2: #8b90a0;
+    --text3: #4a4f5e;
+    --green: #6EE7B7;
+    --green2: #34D399;
+    --green-dim: rgba(110,231,183,0.12);
+    --green-border: rgba(110,231,183,0.25);
+    --purple: #A78BFA;
+    --purple-dim: rgba(167,139,250,0.12);
+    --purple-border: rgba(167,139,250,0.25);
+    --amber: #FCD34D;
+    --amber-dim: rgba(252,211,77,0.1);
+    --amber-border: rgba(252,211,77,0.22);
+    --red: #F87171;
+    --red-dim: rgba(248,113,113,0.1);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 2rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 18px; height: 18px; }
+
+  .logo-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .nav-section { margin-bottom: 0.25rem; }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0 1.5rem;
+    margin-bottom: 4px;
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 1.5rem;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-link:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.03);
+    border-left-color: var(--border2);
+  }
+
+  .nav-link.active {
+    color: var(--green);
+    border-left-color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .nav-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    min-width: 16px;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .sidebar-footer p {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 4rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(110,231,183,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--green);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title span { color: var(--green); }
+
+  .hero-desc {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .hero-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+
+  .pill.green { border-color: var(--green-border); color: var(--green); background: var(--green-dim); }
+  .pill.purple { border-color: var(--purple-border); color: var(--purple); background: var(--purple-dim); }
+  .pill.amber { border-color: var(--amber-border); color: var(--amber); background: var(--amber-dim); }
+
+  /* ── CONTENT SECTIONS ── */
+  .content { padding: 3rem 4rem; max-width: 900px; }
+
+  .section { margin-bottom: 5rem; }
+
+  .section-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .section-intro {
+    font-size: 15px;
+    color: var(--text2);
+    max-width: 640px;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+    border-left: 2px solid var(--border2);
+    padding-left: 1rem;
+  }
+
+  /* ── FILE TREE ── */
+  .file-tree {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+
+  .tree-header {
+    padding: 10px 16px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tree-dots { display: flex; gap: 5px; }
+  .tree-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .tree-filename {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: 4px;
+  }
+
+  .tree-body { padding: 1.25rem 1.5rem; font-family: var(--font-mono); font-size: 13px; line-height: 2; }
+
+  .tree-dir { color: var(--green); }
+  .tree-file { color: var(--text2); }
+  .tree-comment { color: var(--text3); font-style: italic; }
+  .tree-indent1 { padding-left: 1.25rem; }
+  .tree-indent2 { padding-left: 2.5rem; }
+  .tree-indent3 { padding-left: 3.75rem; }
+
+  /* ── BUILD STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 1px; margin: 1.5rem 0; }
+
+  .step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .step:hover { border-color: var(--border2); }
+
+  .step-header {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    align-items: stretch;
+    min-height: 72px;
+  }
+
+  .step-num-col {
+    background: var(--bg3);
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .step-total {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text3);
+  }
+
+  .step-meta { padding: 1rem 1.25rem; }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+    letter-spacing: -0.2px;
+  }
+
+  .step-subtitle { font-size: 12px; color: var(--text2); }
+
+  .step-body {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+    padding-left: calc(64px + 1.25rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .step-desc { font-size: 14px; color: var(--text2); line-height: 1.75; margin: 1rem 0 0.75rem; }
+
+  .step-files { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.75rem; }
+
+  .file-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+
+  .file-tag.green { background: var(--green-dim); border-color: var(--green-border); color: var(--green); }
+
+  .step-rule {
+    font-size: 13px;
+    color: var(--text3);
+    font-style: italic;
+    border-left: 2px solid var(--green-border);
+    padding-left: 10px;
+    margin-top: 0.5rem;
+    line-height: 1.6;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+
+  .code-header {
+    padding: 8px 14px;
+    background: var(--bg4);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-lang {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .code-body {
+    padding: 1.25rem 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--text2);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .c-green { color: var(--green); }
+  .c-purple { color: var(--purple); }
+  .c-amber { color: var(--amber); }
+  .c-red { color: var(--red); }
+  .c-dim { color: var(--text3); }
+
+  /* ── SECRET CARDS ── */
+  .secrets { display: flex; flex-direction: column; gap: 12px; margin: 1.5rem 0; }
+
+  .secret {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--bg2);
+  }
+
+  .secret-bar { height: 3px; }
+  .secret-bar.green { background: var(--green); }
+  .secret-bar.purple { background: var(--purple); }
+  .secret-bar.amber { background: var(--amber); }
+  .secret-bar.red { background: var(--red); }
+
+  .secret-inner { padding: 1.25rem 1.5rem; }
+
+  .secret-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .secret-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .secret-icon.green { background: var(--green-dim); color: var(--green); }
+  .secret-icon.purple { background: var(--purple-dim); color: var(--purple); }
+  .secret-icon.amber { background: var(--amber-dim); color: var(--amber); }
+  .secret-icon.red { background: var(--red-dim); color: var(--red); }
+
+  .secret-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .secret-body {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.75;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin: 1rem 0;
+  }
+
+  .callout.green { background: var(--green-dim); border: 1px solid var(--green-border); }
+  .callout.purple { background: var(--purple-dim); border: 1px solid var(--purple-border); }
+  .callout.amber { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout.green .callout-icon { color: var(--green); }
+  .callout.purple .callout-icon { color: var(--purple); }
+  .callout.amber .callout-icon { color: var(--amber); }
+
+  .callout-text { font-size: 13px; line-height: 1.7; }
+  .callout.green .callout-text { color: #a7f3d0; }
+  .callout.purple .callout-text { color: #c4b5fd; }
+  .callout.amber .callout-text { color: #fde68a; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 10px; border: 1px solid var(--border); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+  thead { background: var(--bg3); }
+
+  th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text3);
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td:first-child { font-family: var(--font-mono); color: var(--green); font-size: 12px; }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); margin: 3rem 0; }
+
+  /* ── PHASE BADGE ── */
+  .phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 1.25rem;
+  }
+
+  .phase-badge.green { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+  .phase-badge.purple { background: var(--purple-dim); border: 1px solid var(--purple-border); color: var(--purple); }
+  .phase-badge.amber { background: var(--amber-dim); border: 1px solid var(--amber-border); color: var(--amber); }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 1rem 0; }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .checklist li::before {
+    content: '○';
+    color: var(--text3);
+    font-size: 12px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+  }
+
+  .checklist li.done::before { content: '◉'; color: var(--green); }
+
+  /* ── ARCHITECTURE DIAGRAM ── */
+  .arch {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 2;
+    color: var(--text2);
+  }
+
+  .arch-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 1rem; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .hero { padding: 2rem; }
+    .content { padding: 2rem; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow { animation: fadeUp 0.4s ease both; }
+  .hero-title { animation: fadeUp 0.4s 0.1s ease both; }
+  .hero-desc { animation: fadeUp 0.4s 0.2s ease both; }
+  .hero-pills { animation: fadeUp 0.4s 0.3s ease both; }
+
+  /* progress bar at top */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--green);
+    z-index: 999;
+    transition: width 0.1s;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">
+          <svg viewBox="0 0 18 18" fill="none">
+            <path d="M3 9l4.5 4.5L15 4.5" stroke="#0a0c0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="logo-name">DevPath</span>
+      </div>
+      <div class="logo-sub">senior build framework</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <a href="#intro" class="nav-link active"><span class="nav-num">00</span> Introduction</a>
+      <a href="#mindset" class="nav-link"><span class="nav-num">→</span> The mindset</a>
+      <a href="#structure" class="nav-link"><span class="nav-num">→</span> Folder structure</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Build order</div>
+      <a href="#step1" class="nav-link"><span class="nav-num">01</span> Folder skeleton</a>
+      <a href="#step2" class="nav-link"><span class="nav-num">02</span> Design tokens</a>
+      <a href="#step3" class="nav-link"><span class="nav-num">03</span> UI primitives</a>
+      <a href="#step4" class="nav-link"><span class="nav-num">04</span> Layout shell</a>
+      <a href="#step5" class="nav-link"><span class="nav-num">05</span> App context</a>
+      <a href="#step6" class="nav-link"><span class="nav-num">06</span> Pages</a>
+      <a href="#step7" class="nav-link"><span class="nav-num">07</span> Routing</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Secrets</div>
+      <a href="#secrets" class="nav-link"><span class="nav-num">⚡</span> What they hide</a>
+      <a href="#patterns" class="nav-link"><span class="nav-num">⚡</span> Naming rules</a>
+      <a href="#localStorage" class="nav-link"><span class="nav-num">⚡</span> No backend yet</a>
+      <a href="#mistakes" class="nav-link"><span class="nav-num">⚡</span> Junior mistakes</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Reference</div>
+      <a href="#components" class="nav-link"><span class="nav-num">ref</span> Component map</a>
+      <a href="#checklist" class="nav-link"><span class="nav-num">ref</span> Daily checklist</a>
+    </div>
+
+    <div class="sidebar-footer">
+      <p>DevPath v1 · React + Tailwind<br>Build this. Use this. Own this.</p>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero" id="intro">
+      <div class="hero-eyebrow">DevPath · Senior Build Framework</div>
+      <h1 class="hero-title">Build like a<br><span>senior</span> from day one.</h1>
+      <p class="hero-desc">This is the exact framework professional developers use but rarely explain. Every step, every file, every secret — written for you, for this project, in the order that makes you unstoppable.</p>
+      <div class="hero-pills">
+        <span class="pill green">React 18</span>
+        <span class="pill green">Tailwind CSS</span>
+        <span class="pill purple">localStorage</span>
+        <span class="pill purple">React Router</span>
+        <span class="pill amber">No backend needed</span>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- THE MINDSET -->
+      <section class="section" id="mindset">
+        <div class="section-eyebrow">Before you write a single line</div>
+        <h2 class="section-title">The mindset that changes everything</h2>
+        <p class="section-intro">Juniors ask "what do I build next?" Seniors ask "what foundation do I need so everything I build next is easy?" This document gives you that foundation — for DevPath specifically.</p>
+
+        <div class="callout green">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>The Tesla rule:</strong> You're not building something new. You're building something familiar but dramatically better. Habit trackers exist. Focus timers exist. Learning logs exist. But nobody combined all three specifically for developers who keep restarting. That's your moat. Never forget it when you feel like quitting.</div>
+        </div>
+
+        <div class="callout purple">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>Build for yourself first:</strong> You ARE the user. When you hit a problem using DevPath, fix it immediately. Your own frustration is the best product feedback you'll ever get. Ship fast, use daily, improve daily.</div>
+        </div>
+
+        <div class="callout amber">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>The order is the secret:</strong> Most juniors fail not because they can't code — but because they code in the wrong order. They build the roof before the foundation. This document gives you the exact order. Follow it, don't skip steps.</div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- FOLDER STRUCTURE -->
+      <section class="section" id="structure">
+        <div class="section-eyebrow">Architecture</div>
+        <h2 class="section-title">The full folder structure</h2>
+        <p class="section-intro">Create this before anything else. This is your map. Every file you create for the rest of the project has a home here. Changing structure later is expensive — get it right now.</p>
+
+        <div class="file-tree">
+          <div class="tree-header">
+            <div class="tree-dots">
+              <div class="tree-dot" style="background:#FF5F57"></div>
+              <div class="tree-dot" style="background:#FEBC2E"></div>
+              <div class="tree-dot" style="background:#28C840"></div>
+            </div>
+            <span class="tree-filename">devpath/ — project root</span>
+          </div>
+          <div class="tree-body">
+<span class="tree-dir">devpath/</span>
+<span class="tree-indent1 tree-dir">├── src/</span>
+<span class="tree-indent2 tree-dir">├── components/</span>
+<span class="tree-indent3 tree-dir">├── ui/</span><span class="tree-comment">          ← dumb, reusable atoms</span>
+<span class="tree-indent3 tree-file">│   ├── Button.jsx</span>
+<span class="tree-indent3 tree-file">│   ├── Card.jsx</span>
+<span class="tree-indent3 tree-file">│   ├── Badge.jsx</span>
+<span class="tree-indent3 tree-file">│   ├── Input.jsx</span>
+<span class="tree-indent3 tree-file">│   └── Modal.jsx</span>
+<span class="tree-indent3 tree-dir">├── layout/</span><span class="tree-comment">      ← structure every page shares</span>
+<span class="tree-indent3 tree-file">│   ├── Layout.jsx</span>
+<span class="tree-indent3 tree-file">│   ├── Sidebar.jsx</span>
+<span class="tree-indent3 tree-file">│   └── Navbar.jsx</span>
+<span class="tree-indent3 tree-dir">└── features/</span><span class="tree-comment">   ← smart feature components</span>
+<span class="tree-indent3 tree-file">    ├── StreakBar.jsx</span>
+<span class="tree-indent3 tree-file">    ├── MoodPicker.jsx</span>
+<span class="tree-indent3 tree-file">    ├── TaskList.jsx</span>
+<span class="tree-indent3 tree-file">    ├── FocusTimer.jsx</span>
+<span class="tree-indent3 tree-file">    └── LogEntry.jsx</span>
+<span class="tree-indent2 tree-dir">├── pages/</span><span class="tree-comment">           ← full screens, assembled from components</span>
+<span class="tree-indent3 tree-file">├── Dashboard.jsx</span>
+<span class="tree-indent3 tree-file">├── Focus.jsx</span>
+<span class="tree-indent3 tree-file">├── Log.jsx</span>
+<span class="tree-indent3 tree-file">├── Stats.jsx</span>
+<span class="tree-indent3 tree-file">└── Path.jsx</span>
+<span class="tree-indent2 tree-dir">├── context/</span><span class="tree-comment">         ← app brain / global state</span>
+<span class="tree-indent3 tree-file">└── AppContext.jsx</span>
+<span class="tree-indent2 tree-dir">├── hooks/</span><span class="tree-comment">           ← reusable logic</span>
+<span class="tree-indent3 tree-file">├── useApp.js</span>
+<span class="tree-indent3 tree-file">├── useStreak.js</span>
+<span class="tree-indent3 tree-file">└── useTimer.js</span>
+<span class="tree-indent2 tree-dir">├── utils/</span><span class="tree-comment">           ← pure helper functions</span>
+<span class="tree-indent3 tree-file">├── dates.js</span>
+<span class="tree-indent3 tree-file">└── storage.js</span>
+<span class="tree-indent2 tree-file">├── App.jsx</span><span class="tree-comment">          ← router lives here</span>
+<span class="tree-indent2 tree-file">└── main.jsx</span><span class="tree-comment">         ← entry point, wraps in Provider</span>
+<span class="tree-indent1 tree-file">├── tailwind.config.js</span><span class="tree-comment">  ← design tokens</span>
+<span class="tree-indent1 tree-file">├── index.html</span>
+<span class="tree-indent1 tree-file">└── package.json</span>
+          </div>
+        </div>
+
+        <div class="callout green">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>The 3-layer rule:</strong> <code>ui/</code> = no logic, just looks. <code>features/</code> = logic + no page layout. <code>pages/</code> = assembles features into screens. Never skip layers. A Button has no useEffect. A Dashboard has no raw divs.</div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- BUILD STEPS -->
+      <section class="section" id="step1">
+        <div class="phase-badge green">● Phase 1 — Foundation</div>
+        <div class="section-eyebrow">Step 01</div>
+        <h2 class="section-title">Create the folder skeleton</h2>
+        <p class="section-intro">Open your terminal. Create the project with Vite. Then create every folder from the structure above — even if they're empty. Empty folders are a promise to your future self.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">terminal</span></div>
+          <div class="code-body"><span class="c-green">npm</span> create vite@latest devpath -- --template react
+<span class="c-green">cd</span> devpath
+<span class="c-green">npm</span> install
+<span class="c-green">npm</span> install -D tailwindcss postcss autoprefixer
+<span class="c-green">npx</span> tailwindcss init -p
+<span class="c-green">npm</span> install react-router-dom
+
+<span class="c-dim"># create the folder structure</span>
+<span class="c-green">mkdir</span> -p src/components/ui
+<span class="c-green">mkdir</span> -p src/components/layout
+<span class="c-green">mkdir</span> -p src/components/features
+<span class="c-green">mkdir</span> -p src/pages
+<span class="c-green">mkdir</span> -p src/context
+<span class="c-green">mkdir</span> -p src/hooks
+<span class="c-green">mkdir</span> -p src/utils</div>
+        </div>
+      </section>
+
+      <section class="section" id="step2">
+        <div class="section-eyebrow">Step 02</div>
+        <h2 class="section-title">Design tokens — one source of truth</h2>
+        <p class="section-intro">Before writing any component, define your brand in <code>tailwind.config.js</code>. This means every color, every font, every spacing decision lives in one file. If DevPath's brand ever changes — you change it here and the whole app updates.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">tailwind.config.js</span></div>
+          <div class="code-body"><span class="c-purple">export default</span> {
+  content: [<span class="c-amber">"./index.html"</span>, <span class="c-amber">"./src/**/*.{js,jsx}"</span>],
+  theme: {
+    extend: {
+      colors: {
+        <span class="c-dim">// DevPath brand colors — change here = changes everywhere</span>
+        night:   <span class="c-amber">'#0a0c0f'</span>,
+        surface: <span class="c-amber">'#0f1117'</span>,
+        border:  <span class="c-amber">'rgba(255,255,255,0.07)'</span>,
+        streak:  <span class="c-amber">'#6EE7B7'</span>,  <span class="c-dim">// green — reward, progress</span>
+        focus:   <span class="c-amber">'#A78BFA'</span>,  <span class="c-dim">// purple — concentration</span>
+        mood:    <span class="c-amber">'#FCD34D'</span>,  <span class="c-dim">// amber — energy, mood</span>
+        muted:   <span class="c-amber">'#8b90a0'</span>,  <span class="c-dim">// secondary text</span>
+        ghost:   <span class="c-amber">'#4a4f5e'</span>,  <span class="c-dim">// tertiary text</span>
+      },
+      fontFamily: {
+        display: [<span class="c-amber">'Syne'</span>, <span class="c-amber">'sans-serif'</span>],
+        body:    [<span class="c-amber">'DM Sans'</span>, <span class="c-amber">'sans-serif'</span>],
+        mono:    [<span class="c-amber">'JetBrains Mono'</span>, <span class="c-amber">'monospace'</span>],
+      },
+    },
+  },
+  plugins: [],
+}</div>
+        </div>
+
+        <div class="callout amber">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>Rule:</strong> Never write <code>text-[#6EE7B7]</code> in your components. Always write <code>text-streak</code>. The named token carries meaning. The hex value carries nothing.</div>
+        </div>
+      </section>
+
+      <section class="section" id="step3">
+        <div class="section-eyebrow">Step 03</div>
+        <h2 class="section-title">UI primitives — your Lego bricks</h2>
+        <p class="section-intro">Build 4 dumb components first. These have zero logic — just props and Tailwind classes. Every page you build later uses these. Build them once, use them everywhere.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">components/ui/Button.jsx</span></div>
+          <div class="code-body"><span class="c-dim">// This component does ONE thing: look like a button.</span>
+<span class="c-dim">// No fetch. No state. No useEffect. Ever.</span>
+
+<span class="c-purple">const</span> variants = {
+  primary:  <span class="c-amber">'bg-streak text-night font-semibold hover:bg-streak/90'</span>,
+  ghost:    <span class="c-amber">'border border-white/10 text-muted hover:bg-white/5'</span>,
+  danger:   <span class="c-amber">'bg-red-500/10 border border-red-500/20 text-red-400'</span>,
+}
+
+<span class="c-purple">export default function</span> <span class="c-green">Button</span>({
+  children, variant = <span class="c-amber">'ghost'</span>, onClick, disabled, className = <span class="c-amber">''</span>
+}) {
+  <span class="c-purple">return</span> (
+    &lt;button
+      onClick={onClick}
+      disabled={disabled}
+      className={<span class="c-amber">`
+        px-4 py-2 rounded-lg text-sm transition-all duration-150
+        disabled:opacity-40 disabled:cursor-not-allowed
+        ${variants[variant]} ${className}
+      `</span>}
+    &gt;
+      {children}
+    &lt;/button&gt;
+  )
+}</div>
+        </div>
+
+        <div class="callout green">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>The dumb component rule:</strong> If you find yourself writing <code>useEffect</code> or <code>fetch</code> inside Button, Card, Badge, or Input — stop. Extract that logic into a feature component or a hook. Dumb components are reusable forever. Smart ones are reusable never.</div>
+        </div>
+
+        <p style="font-size:14px;color:var(--text2);margin:1rem 0 0.5rem;">Build these 4 before anything else:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Props</th>
+                <th>What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Button.jsx</td><td>variant, onClick, disabled</td><td>primary / ghost / danger styles</td></tr>
+              <tr><td>Card.jsx</td><td>children, className</td><td>dark surface with border + padding</td></tr>
+              <tr><td>Badge.jsx</td><td>label, color</td><td>small colored pill label</td></tr>
+              <tr><td>Input.jsx</td><td>value, onChange, placeholder</td><td>styled text input with focus ring</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="step4">
+        <div class="section-eyebrow">Step 04</div>
+        <h2 class="section-title">Layout shell — build once, use forever</h2>
+        <p class="section-intro">This is the container every page lives inside. Sidebar + top nav + a content area. You build this once and never touch it again. Every page just slots in the middle.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">components/layout/Layout.jsx</span></div>
+          <div class="code-body"><span class="c-purple">import</span> Sidebar <span class="c-purple">from</span> <span class="c-amber">'./Sidebar'</span>
+
+<span class="c-purple">export default function</span> <span class="c-green">Layout</span>({ children }) {
+  <span class="c-purple">return</span> (
+    &lt;div className=<span class="c-amber">"flex min-h-screen bg-night"</span>&gt;
+      &lt;Sidebar /&gt;
+      &lt;main className=<span class="c-amber">"flex-1 min-w-0 overflow-y-auto"</span>&gt;
+        {children}
+      &lt;/main&gt;
+    &lt;/div&gt;
+  )
+}
+
+<span class="c-dim">// Usage in App.jsx:</span>
+<span class="c-dim">// &lt;Layout&gt;&lt;Dashboard /&gt;&lt;/Layout&gt;</span>
+<span class="c-dim">// &lt;Layout&gt;&lt;Focus /&gt;&lt;/Layout&gt;</span>
+<span class="c-dim">// The sidebar never re-renders. Only the middle swaps.</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="step5">
+        <div class="phase-badge purple">● Phase 2 — Brain</div>
+        <div class="section-eyebrow">Step 05 — The most important step</div>
+        <h2 class="section-title">AppContext — your app's brain</h2>
+        <p class="section-intro">This is the single most important file in DevPath. All your data lives here. Tasks, streak, mood, log entries. Every page reads from here. <code>localStorage</code> saves it automatically — no backend needed.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">context/AppContext.jsx</span></div>
+          <div class="code-body"><span class="c-purple">import</span> { createContext, useContext, useReducer, useEffect } <span class="c-purple">from</span> <span class="c-amber">'react'</span>
+
+<span class="c-dim">// 1. The shape of ALL your app's data</span>
+<span class="c-purple">const</span> initialState = {
+  tasks:    [],        <span class="c-dim">// today's learning tasks</span>
+  streak:   0,        <span class="c-dim">// current day streak</span>
+  mood:     null,     <span class="c-dim">// 'rough' | 'okay' | 'good' | 'pumped'</span>
+  log:      [],       <span class="c-dim">// [{date, text, tag}]</span>
+  sessions: [],       <span class="c-dim">// [{date, duration, mood}]</span>
+  path:     [],       <span class="c-dim">// [{id, title, done, order}]</span>
+}
+
+<span class="c-dim">// 2. Reducer — every action that can change state</span>
+<span class="c-purple">function</span> <span class="c-green">reducer</span>(state, action) {
+  <span class="c-purple">switch</span> (action.type) {
+    <span class="c-purple">case</span> <span class="c-amber">'ADD_TASK'</span>:
+      <span class="c-purple">return</span> { ...state, tasks: [...state.tasks, action.payload] }
+    <span class="c-purple">case</span> <span class="c-amber">'TOGGLE_TASK'</span>:
+      <span class="c-purple">return</span> {
+        ...state,
+        tasks: state.tasks.map(t =>
+          t.id === action.payload ? { ...t, done: !t.done } : t
+        )
+      }
+    <span class="c-purple">case</span> <span class="c-amber">'SET_MOOD'</span>:
+      <span class="c-purple">return</span> { ...state, mood: action.payload }
+    <span class="c-purple">case</span> <span class="c-amber">'ADD_LOG'</span>:
+      <span class="c-purple">return</span> { ...state, log: [action.payload, ...state.log] }
+    <span class="c-purple">case</span> <span class="c-amber">'INCREMENT_STREAK'</span>:
+      <span class="c-purple">return</span> { ...state, streak: state.streak + 1 }
+    <span class="c-purple">case</span> <span class="c-amber">'LOAD'</span>:
+      <span class="c-purple">return</span> action.payload
+    <span class="c-purple">default</span>:
+      <span class="c-purple">return</span> state
+  }
+}
+
+<span class="c-dim">// 3. Create context</span>
+<span class="c-purple">const</span> AppContext = createContext(null)
+
+<span class="c-dim">// 4. Provider — wraps the whole app</span>
+<span class="c-purple">export function</span> <span class="c-green">AppProvider</span>({ children }) {
+  <span class="c-purple">const</span> [state, dispatch] = useReducer(reducer, initialState)
+
+  <span class="c-dim">// Load from localStorage on first open</span>
+  useEffect(() => {
+    <span class="c-purple">const</span> saved = localStorage.getItem(<span class="c-amber">'devpath'</span>)
+    <span class="c-purple">if</span> (saved) dispatch({ type: <span class="c-amber">'LOAD'</span>, payload: JSON.parse(saved) })
+  }, [])
+
+  <span class="c-dim">// Save to localStorage on every state change</span>
+  useEffect(() => {
+    localStorage.setItem(<span class="c-amber">'devpath'</span>, JSON.stringify(state))
+  }, [state])
+
+  <span class="c-purple">return</span> (
+    &lt;AppContext.Provider value={{ state, dispatch }}&gt;
+      {children}
+    &lt;/AppContext.Provider&gt;
+  )
+}
+
+<span class="c-dim">// 5. Custom hook — how every component reads the brain</span>
+<span class="c-purple">export function</span> <span class="c-green">useApp</span>() {
+  <span class="c-purple">return</span> useContext(AppContext)
+}
+
+<span class="c-dim">// Usage in any component:
+// const { state, dispatch } = useApp()
+// dispatch({ type: 'ADD_TASK', payload: { id: Date.now(), text: 'Build form', done: false } })</span></div>
+        </div>
+
+        <div class="callout purple">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>Why useReducer instead of useState?</strong> When your state has multiple related pieces that change together, <code>useReducer</code> keeps all the update logic in one place. You can see every possible state change at a glance. That's architecture — not magic.</div>
+        </div>
+
+        <div class="callout green">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>Wrap in main.jsx:</strong> Put <code>&lt;AppProvider&gt;</code> around your <code>&lt;App /&gt;</code> in <code>main.jsx</code>. This means every single component in your app can call <code>useApp()</code> and get the data — no prop drilling ever.</div>
+        </div>
+      </section>
+
+      <section class="section" id="step6">
+        <div class="phase-badge green">● Phase 3 — Assembly</div>
+        <div class="section-eyebrow">Step 06</div>
+        <h2 class="section-title">Build the pages — in this exact order</h2>
+        <p class="section-intro">Now the fun part. By this point you have: tokens, atoms, layout, and a brain. Every page is just assembly. Build them in this order — each one teaches you something you need for the next.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Order</th><th>Page</th><th>Why this order</th><th>Key concepts</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1st</td><td>Dashboard</td><td>Your daily page. Most used. Fix this first for yourself.</td><td>useApp, conditional render, lists</td></tr>
+              <tr><td>2nd</td><td>Focus</td><td>Teaches you useEffect for the timer countdown.</td><td>setInterval, cleanup, useEffect</td></tr>
+              <tr><td>3rd</td><td>Log</td><td>Simple list + form. Builds muscle memory.</td><td>forms, dispatch ADD_LOG</td></tr>
+              <tr><td>4th</td><td>Stats</td><td>Teaches derived data — compute from existing state.</td><td>array reduce, no new state</td></tr>
+              <tr><td>5th</td><td>Path</td><td>Most complex. Do it last when you're confident.</td><td>ordered lists, progress tracking</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout amber">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>The page rule:</strong> A page component should read like a newspaper — you can skim it and understand what it shows. If your Dashboard.jsx is 300+ lines of raw HTML, you skipped the component extraction step. Each visual block should be a named component.</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">pages/Dashboard.jsx — how it should look</span></div>
+          <div class="code-body"><span class="c-purple">import</span> { useApp } <span class="c-purple">from</span> <span class="c-amber">'../context/AppContext'</span>
+<span class="c-purple">import</span> StreakBar    <span class="c-purple">from</span> <span class="c-amber">'../components/features/StreakBar'</span>
+<span class="c-purple">import</span> MoodPicker  <span class="c-purple">from</span> <span class="c-amber">'../components/features/MoodPicker'</span>
+<span class="c-purple">import</span> TaskList    <span class="c-purple">from</span> <span class="c-amber">'../components/features/TaskList'</span>
+<span class="c-purple">import</span> StatCards   <span class="c-purple">from</span> <span class="c-amber">'../components/features/StatCards'</span>
+
+<span class="c-purple">export default function</span> <span class="c-green">Dashboard</span>() {
+  <span class="c-purple">const</span> { state } = useApp()
+
+  <span class="c-purple">return</span> (
+    &lt;div className=<span class="c-amber">"p-8 max-w-2xl"</span>&gt;
+      &lt;h1 className=<span class="c-amber">"text-2xl font-display mb-6"</span>&gt;
+        Good morning. Day {state.streak} streak.
+      &lt;/h1&gt;
+      &lt;StreakBar /&gt;
+      &lt;StatCards /&gt;
+      &lt;TaskList /&gt;
+      &lt;MoodPicker /&gt;
+    &lt;/div&gt;
+  )
+}
+
+<span class="c-dim">// 30 lines. Reads like English. This is senior code.</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="step7">
+        <div class="section-eyebrow">Step 07</div>
+        <h2 class="section-title">Routing — connect everything last</h2>
+        <p class="section-intro">Add React Router after all pages exist. Routing is plumbing — build the rooms first, then connect the pipes. This is the last step, and it takes 20 minutes.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">App.jsx</span></div>
+          <div class="code-body"><span class="c-purple">import</span> { BrowserRouter, Routes, Route, Navigate } <span class="c-purple">from</span> <span class="c-amber">'react-router-dom'</span>
+<span class="c-purple">import</span> Layout     <span class="c-purple">from</span> <span class="c-amber">'./components/layout/Layout'</span>
+<span class="c-purple">import</span> Dashboard  <span class="c-purple">from</span> <span class="c-amber">'./pages/Dashboard'</span>
+<span class="c-purple">import</span> Focus      <span class="c-purple">from</span> <span class="c-amber">'./pages/Focus'</span>
+<span class="c-purple">import</span> Log        <span class="c-purple">from</span> <span class="c-amber">'./pages/Log'</span>
+<span class="c-purple">import</span> Stats      <span class="c-purple">from</span> <span class="c-amber">'./pages/Stats'</span>
+<span class="c-purple">import</span> Path       <span class="c-purple">from</span> <span class="c-amber">'./pages/Path'</span>
+
+<span class="c-purple">export default function</span> <span class="c-green">App</span>() {
+  <span class="c-purple">return</span> (
+    &lt;BrowserRouter&gt;
+      &lt;Layout&gt;
+        &lt;Routes&gt;
+          &lt;Route path=<span class="c-amber">"/"</span>        element={&lt;Dashboard /&gt;} /&gt;
+          &lt;Route path=<span class="c-amber">"/focus"</span>   element={&lt;Focus /&gt;}     /&gt;
+          &lt;Route path=<span class="c-amber">"/log"</span>     element={&lt;Log /&gt;}       /&gt;
+          &lt;Route path=<span class="c-amber">"/stats"</span>   element={&lt;Stats /&gt;}     /&gt;
+          &lt;Route path=<span class="c-amber">"/path"</span>    element={&lt;Path /&gt;}      /&gt;
+          &lt;Route path=<span class="c-amber">"*"</span>       element={&lt;Navigate to=<span class="c-amber">"/"</span> /&gt;} /&gt;
+        &lt;/Routes&gt;
+      &lt;/Layout&gt;
+    &lt;/BrowserRouter&gt;
+  )
+}</div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- SECRETS -->
+      <section class="section" id="secrets">
+        <div class="phase-badge amber">⚡ The secrets</div>
+        <div class="section-eyebrow">What seniors know but rarely share</div>
+        <h2 class="section-title">The things nobody tells juniors</h2>
+        <p class="section-intro">These are not tips. These are the things that separate code that works from code that scales, impresses, and survives a real product lifecycle.</p>
+
+        <div class="secrets">
+          <div class="secret">
+            <div class="secret-bar green"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon green">①</div>
+                <div class="secret-title">Build the empty state first — before the happy path</div>
+              </div>
+              <div class="secret-body">What does the app look like when there are zero tasks? Zero log entries? Day 1 with no streak? Seniors build this first because it forces you to understand the data shape. Juniors build the happy path and then panic when the data is empty and everything breaks.</div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar purple"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon purple">②</div>
+                <div class="secret-title">Functional updates prevent bugs you won't understand</div>
+              </div>
+              <div class="secret-body">Always write <code style="color:var(--purple)">setTasks(prev =&gt; [...prev, newTask])</code> — not <code style="color:var(--red)">setTasks([...tasks, newTask])</code>. The second one captures a stale snapshot of tasks. Inside event handlers and async functions this causes subtle bugs that are nearly impossible to debug. The functional form always reads the latest state. Always.</div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar amber"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon amber">③</div>
+                <div class="secret-title">localStorage IS your backend for v1 — use it fully</div>
+              </div>
+              <div class="secret-body">You don't need Supabase, Firebase, or any backend to ship DevPath v1. <code style="color:var(--amber)">localStorage</code> persists data between sessions, works offline, and requires zero setup. The AppContext pattern above handles it for you automatically. Ship the product first. Add a real backend when you have real users who need it.</div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar green"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon green">④</div>
+                <div class="secret-title">Name things by what they ARE, not what they DO</div>
+              </div>
+              <div class="secret-body">
+                Not <code style="color:var(--red)">handleData</code>, <code style="color:var(--red)">fetchStuff</code>, <code style="color:var(--red)">processItem</code>, <code style="color:var(--red)">doThing</code>.<br>
+                Yes: <code style="color:var(--green)">addTask</code>, <code style="color:var(--green)">toggleStreak</code>, <code style="color:var(--green)">logInsight</code>, <code style="color:var(--green)">setMood</code>.<br><br>
+                Code that reads like English is professional code. A senior reading your file should understand what it does without running it. This one habit will make you look 2 years more experienced immediately.
+              </div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar purple"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon purple">⑤</div>
+                <div class="secret-title">One component, one job — the "and" test</div>
+              </div>
+              <div class="secret-body">If you describe a component with the word "and" — "it shows the streak AND lets you pick mood" — split it into two components. <code style="color:var(--purple)">StreakBar</code> and <code style="color:var(--purple)">MoodPicker</code>. This is the single rule that separates spaghetti code from professional architecture. Components with one job are testable, reusable, and understandable in 10 seconds.</div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar amber"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon amber">⑥</div>
+                <div class="secret-title">Colocate logic — don't centralise everything</div>
+              </div>
+              <div class="secret-body">New developers think "I'll put all my helper functions in utils.js" and end up with a 600-line mess. Instead: if the logic belongs to one component, put it in that component or a hook right next to it. <code style="color:var(--amber)">useTimer.js</code> lives next to <code style="color:var(--amber)">FocusTimer.jsx</code>. Only genuinely shared utilities go in <code>utils/</code>. Ask yourself: "will another component ever need this?" If no — keep it local.</div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar green"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon green">⑦</div>
+                <div class="secret-title">Derived state — never store what you can compute</div>
+              </div>
+              <div class="secret-body">If you have a list of tasks and you want to show "completed count" — don't create a <code style="color:var(--red)">completedCount</code> state. Compute it: <code style="color:var(--green)">const completedCount = tasks.filter(t =&gt; t.done).length</code>. Storing derived data creates sync bugs — two pieces of state that should match but drift apart. Your Stats page is entirely derived from tasks, sessions, and log. No new state needed.</div>
+            </div>
+          </div>
+
+          <div class="secret">
+            <div class="secret-bar purple"></div>
+            <div class="secret-inner">
+              <div class="secret-label">
+                <div class="secret-icon purple">⑧</div>
+                <div class="secret-title">useEffect cleanup — the memory leak you're writing right now</div>
+              </div>
+              <div class="secret-body">The Focus timer uses <code>setInterval</code>. If you don't return a cleanup function from useEffect, that interval keeps running even after the user navigates away — draining battery, causing bugs, and leaking memory. Always return cleanup for timers, event listeners, and subscriptions.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- JUNIOR MISTAKES -->
+      <section class="section" id="mistakes">
+        <div class="section-eyebrow">Avoid these</div>
+        <h2 class="section-title">The 6 mistakes that kill junior projects</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Mistake</th><th>What it looks like</th><th>The fix</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>God component</td>
+                <td>App.jsx is 800 lines with everything inside it</td>
+                <td>Split. One component, one job. Always.</td>
+              </tr>
+              <tr>
+                <td>Prop drilling</td>
+                <td>Passing data through 5 components to reach 1</td>
+                <td>Put it in AppContext. Access it directly anywhere.</td>
+              </tr>
+              <tr>
+                <td>Index as key</td>
+                <td><code>tasks.map((t, i) =&gt; &lt;Task key={i} /&gt;)</code></td>
+                <td>Use stable IDs: <code>key={task.id}</code></td>
+              </tr>
+              <tr>
+                <td>Direct mutation</td>
+                <td><code>tasks.push(newTask)</code> then setState</td>
+                <td>Always return new arrays. Never mutate.</td>
+              </tr>
+              <tr>
+                <td>No empty states</td>
+                <td>App crashes or shows nothing when data is empty</td>
+                <td>Handle empty explicitly — always.</td>
+              </tr>
+              <tr>
+                <td>No loading states</td>
+                <td>UI freezes while async operations run</td>
+                <td>Show a spinner or skeleton while waiting.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- COMPONENT MAP -->
+      <section class="section" id="components">
+        <div class="section-eyebrow">Reference</div>
+        <h2 class="section-title">Full component map</h2>
+        <p class="section-intro">Every component you need to build for DevPath v1. Use this as your build checklist.</p>
+
+        <div class="arch">
+          <div class="arch-title">Component tree — DevPath v1</div>
+<span style="color:var(--green)">App.jsx</span>
+<span style="color:var(--text2)"> └── AppProvider (wraps everything)</span>
+<span style="color:var(--text2)">     └── BrowserRouter</span>
+<span style="color:var(--text2)">         └── Layout</span>
+<span style="color:var(--text2)">             ├── Sidebar</span>
+<span style="color:var(--text2)">             │   ├── LogoMark</span>
+<span style="color:var(--text2)">             │   └── NavLink (×5 pages)</span>
+<span style="color:var(--text2)">             └── [page content]</span>
+
+<span style="color:var(--green)">Dashboard.jsx</span>
+<span style="color:var(--text2)"> ├── StreakBar        ← streak heatmap</span>
+<span style="color:var(--text2)"> ├── StatCards        ← streak / hours / topics</span>
+<span style="color:var(--text2)"> ├── TaskList</span>
+<span style="color:var(--text2)"> │   ├── TaskItem (×n)</span>
+<span style="color:var(--text2)"> │   └── AddTaskInput</span>
+<span style="color:var(--text2)"> └── MoodPicker       ← 4 mood buttons</span>
+
+<span style="color:var(--purple)">Focus.jsx</span>
+<span style="color:var(--text2)"> ├── TimerRing        ← circular progress</span>
+<span style="color:var(--text2)"> ├── TimerDisplay     ← MM:SS countdown</span>
+<span style="color:var(--text2)"> ├── CurrentTask      ← what you're working on</span>
+<span style="color:var(--text2)"> └── TimerControls    ← pause/resume/end</span>
+
+<span style="color:var(--amber)">Log.jsx</span>
+<span style="color:var(--text2)"> ├── AddInsight       ← text input + tag picker</span>
+<span style="color:var(--text2)"> └── LogTimeline</span>
+<span style="color:var(--text2)">     └── LogEntry (×n) ← date + text + tag</span>
+
+<span style="color:var(--green)">Stats.jsx</span>
+<span style="color:var(--text2)"> ├── StatGrid         ← 4 big numbers</span>
+<span style="color:var(--text2)"> ├── TopicBars        ← time by topic</span>
+<span style="color:var(--text2)"> └── MoodHistory      ← mood over time</span>
+
+<span style="color:var(--purple)">Path.jsx</span>
+<span style="color:var(--text2)"> ├── PathHeader       ← goal + progress %</span>
+<span style="color:var(--text2)"> └── PathTimeline</span>
+<span style="color:var(--text2)">     └── PathStep (×n) ← done/active/upcoming</span>
+        </div>
+      </section>
+
+      <!-- DAILY CHECKLIST -->
+      <section class="section" id="checklist">
+        <div class="section-eyebrow">Daily ritual</div>
+        <h2 class="section-title">Your daily build checklist</h2>
+        <p class="section-intro">Paste this at the top of every coding session. It takes 30 seconds and prevents 3 hours of confusion.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">before you code — answer these</span></div>
+          <div class="code-body"><span class="c-green">1.</span> What ONE thing am I building today? (not "work on DevPath")
+<span class="c-green">2.</span> Where does the file I'm creating live in the folder structure?
+<span class="c-green">3.</span> Is this a ui/ atom, features/ component, or pages/ screen?
+<span class="c-green">4.</span> Does the data I need live in AppContext already?
+<span class="c-green">5.</span> What is the empty state for this component?
+
+<span class="c-dim">── while coding ──</span>
+
+<span class="c-green">6.</span> Am I about to write the word "and" in my component description?
+   If yes → split into two components first.
+<span class="c-green">7.</span> Am I passing props more than 2 levels deep?
+   If yes → put it in context.
+<span class="c-green">8.</span> Am I storing something I could compute instead?
+   If yes → delete the state, derive it.
+
+<span class="c-dim">── after you code ──</span>
+
+<span class="c-green">9.</span> Log one sentence: what did I actually learn or build today?
+   (Open DevPath. Use it. You built it for this.)</div>
+        </div>
+
+        <div class="callout green">
+          <span class="callout-icon">◆</span>
+          <div class="callout-text"><strong>The final secret:</strong> The developers who ship are the ones who open their editor every single day — even for 20 minutes. Not the ones who wait for motivation. Motivation follows action, not the other way around. DevPath is your tool for this. Build it, then use it to build everything else.</div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<script>
+  // Reading progress bar
+  window.addEventListener('scroll', () => {
+    const el = document.documentElement;
+    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+  });
+
+  // Active nav highlighting
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
